@@ -127,14 +127,34 @@ namespace AzTokenHunter
             }
         }
 
-        //To-do: Add other known microsoft audiences, like msgraph and vault
-        public static bool isKnownToken(string audience) 
-        {
-            if (audience.Equals("https://management.core.windows.net/")) {
-                return true;
-            }
-            return false;
-        }
+        //To-do: Add other known microsoft audiences
+		public static bool isKnownToken(string audience) 
+		{
+			audience = audience.TrimEnd('/');
+
+			// Azure resource manager token
+			if (audience.Equals("https://management.core.windows.net"))
+			{
+				return true;
+
+			}
+			// Azure portal token 
+            // https://seb8iaan.com/default-azuread-enterprise-applications-explained-where-do-they-come-from/
+			else if (audience.Equals("c44b4083-3bb0-49c1-b47d-974e53cbdf3c"))
+			{
+				return true;
+			}
+			// Microsoft graph API
+			else if (audience.Equals("https://graph.windows.net") || audience.Equals("https://graph.windows.net"))
+			{
+				return true;
+			}
+			// Microsoft vault API
+			else if (audience.Equals("https://vault.azure.net")) {
+				return true;
+			}
+			return false;
+		}
 
         static void Main(string[] args)
         {
