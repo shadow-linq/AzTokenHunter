@@ -145,7 +145,7 @@ namespace AzTokenHunter
 			return "Azure Portal";
 		}
 		// Microsoft graph API
-		else if (audience.Equals("https://graph.windows.net") || audience.Equals("https://graph.windows.net"))
+		else if (audience.Equals("https://graph.microsoft.com") || audience.Equals("https://graph.windows.net"))
 		{
 			return "Microsoft Graph API";
 		}
