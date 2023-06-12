@@ -98,7 +98,7 @@ namespace AzTokenHunter
         
         public static void FindValidJWTs(string input)
         {
-            string pattern = @"\beyJ0[A-Za-z0-9-_\.]+[=]?\b"; //To-do: Improve regex search pattern
+            string pattern = @"\beyJ0[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+[=]?\b";
             string systemRoot = Environment.GetEnvironmentVariable("SystemRoot");
             Regex regex = new Regex(pattern);
             MatchCollection matches = regex.Matches(input);
