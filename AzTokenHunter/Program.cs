@@ -166,7 +166,7 @@ namespace AzTokenHunter
                 return;
             }
 
-            if (args.Length ==0)
+            if (args.Length == 0)
             {
                 // Fails without process id
                 AzTokenHunter();
@@ -184,7 +184,7 @@ namespace AzTokenHunter
                     Console.WriteLine("\nPlease use \"AzTokenHunter.exe [pid]\" format\n");
                 }
             }
-            else if (args.Length == 2)
+            else
             {
                 Console.WriteLine("\nPlease use \"AzTokenHunter.exe [pid]\" format\n");
             }
