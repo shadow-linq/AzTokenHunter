@@ -1,5 +1,5 @@
 # AzTokenHunter
-Hunts for Azure tokens inside of process memory.
+Hunts for Azure tokens inside of process memory. Written in C# use usage in C2. A fork of SharpDump.
 
 # Usage
 ```
